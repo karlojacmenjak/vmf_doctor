@@ -4,8 +4,14 @@ VMF Doctor is a [CompilePalX](https://github.com/ruarai/CompilePal) Plugin that 
 
 * Check for duplicate solid brushes and entities 
 
+# Installation
+
+Extract the archive from [releases](https://github.com/karlojacmenjak/vmf_doctor/releases) and put the extracted folder inside _Compile Pal/Parameters_ folder
+
+[Official CompilePalX installation steps](https://github.com/ruarai/CompilePal/blob/master/Guides/Plugins.md#installation)
+
 # Usage
 
-///TODO
+Once installed, add VMF DOCTOR from [The Process Selector](https://github.com/ruarai/CompilePal/blob/master/Guides/QuickStart.md#3-the-process-selector) and choose Parameters you need
 
 
