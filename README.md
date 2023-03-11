@@ -12,6 +12,6 @@ Extract the archive from [releases](https://github.com/karlojacmenjak/vmf_doctor
 
 # Usage
 
-Once installed, add VMF DOCTOR from [The Process Selector](https://github.com/ruarai/CompilePal/blob/master/Guides/QuickStart.md#3-the-process-selector) and choose Parameters you need
+Once installed, add VMF DOCTOR from [The Process Selector](https://github.com/ruarai/CompilePal/blob/master/Guides/QuickStart.md#3-the-process-selector) and choose the desired parameters and Run Compile Pal
 
 
