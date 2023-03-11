@@ -1,0 +1,16 @@
+{
+  "Name": "VMF DOCTOR",
+  "Path": "Parameters\\VMF DOCTOR\\vmf_doctor.exe",
+  "Arguments": "",
+  "Order": 10.0,
+  "DoRun": true,
+  "ReadOutput": true,
+  "Description": "Checks .vmf files for minor problems",
+  "Warning": "Will do something",
+  "PresetDefault": false,
+  "CheckExitCode": true,
+  "BasisString": "$vmfFile$",
+  "SupportsBSP": false,
+  "IncompatibleGames": null,
+  "CompatibleGames": null
+}

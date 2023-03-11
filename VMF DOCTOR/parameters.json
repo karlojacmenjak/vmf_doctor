@@ -1,0 +1,18 @@
+[
+  {
+    "Name": "Duplicate Solids",
+    "Parameter": " --dsolid",
+    "Description": "Searches your file for duplicate solids and prints their ID's",
+    "Warning": "",
+    "CanHaveValue": false,
+    "Value": null
+  },
+  {
+    "Name": "Duplicate Entities",
+    "Parameter": " --dentity",
+    "Description": "Searches your file for duplicate entities and prints their ID's",
+    "Warning": "",
+    "CanHaveValue": false,
+    "Value": "null"
+  }
+]
