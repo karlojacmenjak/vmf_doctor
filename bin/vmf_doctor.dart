@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/args.dart';
 import 'package:duplicate_solids/duplicate_solids.dart';
 
@@ -8,13 +10,16 @@ void main(List<String> arguments) {
   parser.addFlag(dSolid, defaultsTo: false);
   parser.addFlag(dEntity, defaultsTo: false);
   ArgResults results = parser.parse(arguments);
-  print("""\n\n\n
+  print(
+      """\n\n\n
 --------------------------------------------\n
 Starting VMF DOCTOR's appointment by KaPPY\n
 --------------------------------------------
 """);
-  if (results[dSolid]) {
-    findDuplicateSolids(arguments.last);
-  }
-  if (results[dEntity]) {}
+  File(arguments.last).readAsString().then((String contents) {
+    if (results[dSolid]) {
+      duplicateSolids(contents);
+    }
+    if (results[dEntity]) {}
+  });
 }

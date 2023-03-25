@@ -2,6 +2,13 @@ import 'dart:io';
 
 import 'package:duplicate_solids/vmf_util.dart';
 
+void duplicateSolids(String contents) {
+  Map result = findStructures(contents);
+  result.forEach((key, value) {
+    print('$key -> $value');
+  });
+}
+
 void findDuplicateSolids(String arguments) {
   File(arguments).readAsString().then((String contents) {
     int worldIndex = contents.indexOf("world");
@@ -24,7 +31,7 @@ void findDuplicateSolids(String arguments) {
     for (String solid in solidList) {
       int solidId = solid.indexOf("\"id\"");
       String key = solid
-          .substring(solidId, indexOfChar(solid, solidId, '\n'))
+          .substring(solidId, solid.indexOf('\n', solidId))
           .replaceAll('id', '')
           .replaceAll('"', '')
           .replaceAll(' ', '');

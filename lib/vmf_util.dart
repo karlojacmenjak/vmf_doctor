@@ -1,6 +1,7 @@
 import 'dart:collection';
+import 'dart:convert';
 
-List classTypes = [
+const structuresKeywords = <String>[
   "versioninfo",
   "visgroups",
   "world",
@@ -11,30 +12,20 @@ List classTypes = [
 ];
 
 class VMFClass {
-  late String classname;
-  late Map properties;
+  String className = "";
+  Map properties = {};
+
+  String get classname {
+    return className;
+  }
+
+  set classname(String value) {
+    className = value;
+  }
 
   void addProperty(String propertyname, dynamic property) {
     properties[propertyname] = property;
   }
-}
-
-String removeWrapChars(String string, [String chars = "\"\""]) {
-  if (chars.length < 2) throw (ArgumentError("'chars' is needs 2 characters!"));
-  int firstIndex = string.indexOf(chars[0]) + 1;
-  String returnString = '';
-  for (var i = firstIndex; i < string.length; i++) {
-    if (string[i] != chars[1]) {
-      returnString += string[i];
-    }
-  }
-  return returnString;
-}
-
-int indexOfChar(String string, int start, String character) {
-  while (string[start++] != character) {}
-
-  return start;
 }
 
 int bracketPairClosingIndex(String string, int fromIndex,
@@ -42,6 +33,7 @@ int bracketPairClosingIndex(String string, int fromIndex,
   Queue brackets = Queue();
   int closingPosition = fromIndex;
   for (int i = fromIndex; i < string.length; i++) {
+    //stdout.write(string[i]);
     if (string[i] == bracket[0]) {
       brackets.addLast(string[i]);
     }
@@ -56,16 +48,46 @@ int bracketPairClosingIndex(String string, int fromIndex,
   return closingPosition;
 }
 
-VMFClass stringToClass(String string, int startIndex, int endIndex) {
-  for (var className in classTypes) {
-    if (string.contains(className)) {
-      print("String has $className");
+Map findStructures(String structure) {
+  Map keywordIndexes = {};
 
-      VMFClass newClass = VMFClass();
+  for (var keyword in structuresKeywords) {
+    int keyLength = keyword.length;
+    List<int> indexList = List.empty(growable: true);
+    int lastIndex = 0;
+
+    //find the next index after the last index was one
+    //stop when indexOf returns -1 (no match is found)
+    while ((lastIndex = structure.indexOf(keyword, lastIndex)) > -1) {
+      indexList.add(lastIndex);
+
+      lastIndex = indexList.last + keyLength;
+    }
+    keywordIndexes[keyword] = indexList;
+  }
+  return keywordIndexes;
+}
+
+VMFClass stringToClass(String string) {
+  VMFClass newClass = VMFClass();
+
+  for (var className in structuresKeywords) {
+    if (string.contains(className)) {
       newClass.classname = className;
       int bracketStart = string.indexOf('{');
-      int bracketEnd = bracketPairClosingIndex(string, bracketStart);
+      String substring = string.substring(
+          bracketStart + 1, bracketPairClosingIndex(string, bracketStart) - 1);
+      print(substring);
+      substring = substring.replaceAll('\t', '').replaceAll('"', '');
+      print(substring);
+      List<String> keyValueList = LineSplitter().convert(substring);
+      for (var entry in keyValueList) {
+        List keyAndValue = entry.split(' ');
+        if (keyAndValue.first.length > 0 && keyAndValue.last.length > 0) {
+          newClass.addProperty(keyAndValue.first, keyAndValue.last);
+        }
+      }
     }
   }
-  return VMFClass();
+  return newClass;
 }

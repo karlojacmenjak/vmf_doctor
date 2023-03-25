@@ -1,7 +1,7 @@
 [
   {
     "Name": "Duplicate Solids",
-    "Parameter": " --dsolid",
+    "Parameter": " --dsolid ",
     "Description": "Searches your file for duplicate solids and prints their ID's",
     "Warning": "",
     "CanHaveValue": false,
@@ -11,7 +11,7 @@
     "Name": "Duplicate Entities",
     "Parameter": " --dentity",
     "Description": "Searches your file for duplicate entities and prints their ID's",
-    "Warning": "",
+    "Warning": "NOT IMPLEMENTED IN THIS VERSION YET! https://github.com/karlojacmenjak/vmf_doctor",
     "CanHaveValue": false,
     "Value": "null"
   }

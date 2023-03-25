@@ -1,37 +1,45 @@
 import 'package:duplicate_solids/vmf_util.dart';
 import 'package:test/test.dart';
 
-void main() {
-  test('findDuplicateSolids', () {
-    expect(
-        bracketPairClosingIndex(
-            "there is a { and the result should be the index of this bracket ->}",
-            0,
-            "{}"),
-        67);
-  });
-  test('indexOfChar', () {
-    expect(
-        indexOfChar("Find \n after 12 indexes of text so this ->\n", 13, "\n"),
-        43);
-  });
-  test('stringToClass', () {
-    const testString = r"""
-versioninfo
+const structureTest =
+    r"""
+versioninfo{}
+visgroups{}
+world{}
+entity{}
+hidden{}
+cameras{}
+cordon{}
+versioninfo{}
+""";
+
+const classTest =
+    r"""
+      versioninfo
 {
 	"editorversion" "400"
 	"editorbuild" "8864"
 	"mapversion" "10"
 	"formatversion" "100"
 	"prefab" "0"
+  visgroup
+      {
+            "name" "Tree_1"
+            "visgroupid" "5"
+            "color" "65 45 0"
+      }
 }
-""";
-    print(
-      stringToClass(
-          testString, 0, bracketPairClosingIndex(testString, 0, "{}")),
-    );
+      """;
+
+void main() {
+  test('findStructures', () {
+    Map result = findStructures(structureTest);
+    expect(result.entries.toString(),
+        '(MapEntry(versioninfo: [0, 71]), MapEntry(visgroups: [14]), MapEntry(world: [26]), ..., MapEntry(cameras: [52]), MapEntry(cordon: [62]))');
   });
-  test('returnStringBetweenChars', () {
-    expect(removeWrapChars("\"string\""), "string");
+  test('stringToClass', () {
+    VMFClass vmf = stringToClass(classTest);
+    expect(vmf.properties.toString(),
+        '{editorversion: 400, editorbuild: 8864, mapversion: 10, formatversion: 100, prefab: 0}');
   });
 }
