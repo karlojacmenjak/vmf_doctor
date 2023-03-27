@@ -1,15 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
-
-const structuresKeywords = <String>[
-  "versioninfo",
-  "visgroups",
-  "world",
-  "entity",
-  "hidden",
-  "cameras",
-  "cordon"
-];
+import 'dart:io';
 
 class VMFClass {
   String className = "";
@@ -49,6 +40,8 @@ int bracketPairClosingIndex(String string, int fromIndex,
 }
 
 Map findStructures(String structure) {
+  List<String> structuresKeywords = structureKeywords();
+
   Map keywordIndexes = {};
 
   for (var keyword in structuresKeywords) {
@@ -56,8 +49,6 @@ Map findStructures(String structure) {
     List<int> indexList = List.empty(growable: true);
     int lastIndex = 0;
 
-    //find the next index after the last index was one
-    //stop when indexOf returns -1 (no match is found)
     while ((lastIndex = structure.indexOf(keyword, lastIndex)) > -1) {
       indexList.add(lastIndex);
 
@@ -68,8 +59,28 @@ Map findStructures(String structure) {
   return keywordIndexes;
 }
 
+List<String> structureKeywords() {
+  Map<String, dynamic> structureJson = readStructure();
+
+  var structuresKeywords = <String>[];
+
+  structureJson.forEach((key, value) {
+    structuresKeywords.add(key);
+  });
+  return structuresKeywords;
+}
+
+Map<String, dynamic> readStructure() {
+  Map<String, dynamic> structureJson = {};
+  structureJson = jsonDecode(
+      //TODO: MAKE READ FILE FROM CURRENT DIR!
+      File("lib/structure_classes_subclasses.json").readAsStringSync());
+  return structureJson;
+}
+
 VMFClass stringToClass(String string) {
   VMFClass newClass = VMFClass();
+  var structuresKeywords = structureKeywords();
 
   for (var className in structuresKeywords) {
     if (string.contains(className)) {
@@ -77,9 +88,7 @@ VMFClass stringToClass(String string) {
       int bracketStart = string.indexOf('{');
       String substring = string.substring(
           bracketStart + 1, bracketPairClosingIndex(string, bracketStart) - 1);
-      print(substring);
       substring = substring.replaceAll('\t', '').replaceAll('"', '');
-      print(substring);
       List<String> keyValueList = LineSplitter().convert(substring);
       for (var entry in keyValueList) {
         List keyAndValue = entry.split(' ');
