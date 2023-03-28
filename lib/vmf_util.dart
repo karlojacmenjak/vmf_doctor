@@ -80,16 +80,33 @@ Map<String, dynamic> readStructure() {
 
 VMFClass stringToClass(String string) {
   VMFClass newClass = VMFClass();
-  var structuresKeywords = structureKeywords();
 
-  for (var className in structuresKeywords) {
-    if (string.contains(className)) {
+  var fileStructure = readStructure();
+
+  fileStructure.forEach((className, subclassList) {
+    if (string.contains(RegExp(r"$className\s+"))) {
       newClass.classname = className;
+
       int bracketStart = string.indexOf('{');
       String substring = string.substring(
           bracketStart + 1, bracketPairClosingIndex(string, bracketStart) - 1);
-      substring = substring.replaceAll('\t', '').replaceAll('"', '');
-      List<String> keyValueList = LineSplitter().convert(substring);
+
+      List<int> sortIndexList = List.empty(growable: true);
+      for (var subclass in subclassList) {
+        var index = -1;
+        index = substring.indexOf(subclass);
+        if (index > -1) {
+          sortIndexList.add(index);
+        }
+      }
+      sortIndexList.sort();
+      int subclassStart = sortIndexList.first;
+      String valueParameters = substring
+          .substring(0, subclassStart)
+          .replaceAll('\t', '')
+          .replaceAll('"', '');
+
+      List<String> keyValueList = LineSplitter().convert(valueParameters);
       for (var entry in keyValueList) {
         List keyAndValue = entry.split(' ');
         if (keyAndValue.first.length > 0 && keyAndValue.last.length > 0) {
@@ -97,6 +114,6 @@ VMFClass stringToClass(String string) {
         }
       }
     }
-  }
+  });
   return newClass;
 }
