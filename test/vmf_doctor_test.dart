@@ -151,6 +151,11 @@ void main() {
     expect(result.entries.toString(),
         '(MapEntry(versioninfo: [0, 71]), MapEntry(visgroups: [14]), MapEntry(world: [26]), ..., MapEntry(cameras: [52]), MapEntry(cordon: [62]))');
   });
+
+  test('countSubstrings', () {
+    expect(substringPositions(classTest, "vertices_plus"),
+        [301, 665, 1029, 1393, 1755, 2118]);
+  });
   test('stringToClass', () {
     VMFClass vmf = stringToClass(classTest);
     expect(vmf.className, 'world');

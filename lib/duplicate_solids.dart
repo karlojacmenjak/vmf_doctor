@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:duplicate_solids/vmf_util.dart';
 
 void duplicateSolids(String contents) {
+  String targetStruct = 'world';
   Map result = findStructures(contents);
-  result.forEach((key, value) {
-    print('$key -> $value');
-  });
+  if (result.containsKey(targetStruct)) {
+    int structPosition = result[targetStruct].first;
+    String newString = contents.substring(structPosition);
+    print(stringToClass(newString));
+  }
 }
 
 void findDuplicateSolids(String arguments) {

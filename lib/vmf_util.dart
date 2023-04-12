@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'package:collection/collection.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -45,18 +46,24 @@ Map findStructures(String structure) {
   Map keywordIndexes = {};
 
   for (var keyword in structuresKeywords) {
-    int keyLength = keyword.length;
-    List<int> indexList = List.empty(growable: true);
-    int lastIndex = 0;
-
-    while ((lastIndex = structure.indexOf(keyword, lastIndex)) > -1) {
-      indexList.add(lastIndex);
-
-      lastIndex = indexList.last + keyLength;
-    }
+    List<int> indexList = substringPositions(structure, keyword);
     keywordIndexes[keyword] = indexList;
   }
   return keywordIndexes;
+}
+
+List<int> substringPositions(String structure, String substring) {
+  List<int> indexList = List.empty(growable: true);
+  int lastIndex = 0;
+  int keyLength = substring.length;
+  while ((lastIndex =
+          structure.indexOf(RegExp("\\b$substring\\b"), lastIndex)) >
+      -1) {
+    indexList.add(lastIndex);
+
+    lastIndex = indexList.last + keyLength;
+  }
+  return indexList;
 }
 
 List<String> structureKeywords() {
@@ -80,40 +87,42 @@ Map<String, dynamic> readStructure() {
 
 VMFClass stringToClass(String string) {
   VMFClass newClass = VMFClass();
+  List<int> sortIndexList = List.empty(growable: true);
 
   var fileStructure = readStructure();
+  int bracketStart = string.indexOf('{');
+  String substring = string.substring(
+      bracketStart + 1, bracketPairClosingIndex(string, bracketStart) - 1);
 
+  //find subclasses inside this structure
   fileStructure.forEach((className, subclassList) {
-    if (string.contains(RegExp(r"$className\s+"))) {
+    if (string.contains(RegExp("\\b$className\\b"))) {
       newClass.classname = className;
 
-      int bracketStart = string.indexOf('{');
-      String substring = string.substring(
-          bracketStart + 1, bracketPairClosingIndex(string, bracketStart) - 1);
-
-      List<int> sortIndexList = List.empty(growable: true);
       for (var subclass in subclassList) {
-        var index = -1;
-        index = substring.indexOf(subclass);
-        if (index > -1) {
-          sortIndexList.add(index);
-        }
-      }
-      sortIndexList.sort();
-      int subclassStart = sortIndexList.first;
-      String valueParameters = substring
-          .substring(0, subclassStart)
-          .replaceAll('\t', '')
-          .replaceAll('"', '');
-
-      List<String> keyValueList = LineSplitter().convert(valueParameters);
-      for (var entry in keyValueList) {
-        List keyAndValue = entry.split(' ');
-        if (keyAndValue.first.length > 0 && keyAndValue.last.length > 0) {
-          newClass.addProperty(keyAndValue.first, keyAndValue.last);
-        }
+        List<int> subclassPositions = substringPositions(substring, subclass);
+        sortIndexList += subclassPositions;
       }
     }
   });
+  sortIndexList.sort();
+  int? subclassStart = sortIndexList.firstOrNull;
+  print(sortIndexList);
+  String valueParameters = substring
+      .substring(0, subclassStart)
+      .replaceAll('\t', '')
+      .replaceAll('"', '');
+
+  List<String> keyValueList = LineSplitter().convert(valueParameters);
+  for (var entry in keyValueList) {
+    List keyAndValue = entry.split(' ');
+    if (keyAndValue.first.length > 0 && keyAndValue.last.length > 0) {
+      newClass.addProperty(keyAndValue.first, keyAndValue.last);
+    }
+  }
+  print('-----');
+  print(substring.substring(subclassStart!));
+
+  //print(subclassStart);
   return newClass;
 }
