@@ -149,17 +149,42 @@ void main() {
   test('findStructures', () {
     Map result = findStructures(structureTest);
     expect(result.entries.toString(),
-        '(MapEntry(versioninfo: [0, 71]), MapEntry(visgroups: [14]), MapEntry(world: [26]), ..., MapEntry(cameras: [52]), MapEntry(cordon: [62]))');
+        '(MapEntry(versioninfo: [0, 71]), MapEntry(visgroups: [14]), MapEntry(viewsettings: []), ..., MapEntry(cameras: [52]), MapEntry(cordons: []))');
   });
 
-  test('countSubstrings', () {
+  test('substringPositions', () {
     expect(substringPositions(classTest, "vertices_plus"),
         [301, 665, 1029, 1393, 1755, 2118]);
   });
   test('stringToClass', () {
     VMFClass vmf = stringToClass(classTest);
     expect(vmf.className, 'world');
-    expect(vmf.properties.toString(),
-        '{id: 1, mapversion: 11, classname: worldspawn, detailmaterial: detail/detailsprites_2fort, detailvbsp: detail_2fort.vbsp, maxpropscreenwidth: -1, skyname: sky_tf2_04}');
+    expect(vmf.toString(),
+        """
+Class: "world"
+"id": 1
+"mapversion": 11
+"classname": worldspawn
+"detailmaterial": detail/detailsprites_2fort
+"detailvbsp": detail_2fort.vbsp
+"maxpropscreenwidth": -1
+"skyname": sky_tf2_04
+""");
+    vmf = stringToClass(
+        """viewsettings
+{
+	"bSnapToGrid" "1"
+	"bShowGrid" "1"
+	"bShowLogicalGrid" "0"
+	"nGridSpacing" "64"
+}""");
+    expect(vmf.toString(),
+        """
+Class: "viewsettings"
+"bSnapToGrid": 1
+"bShowGrid": 1
+"bShowLogicalGrid": 0
+"nGridSpacing": 64
+""");
   });
 }

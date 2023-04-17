@@ -1,5 +1,5 @@
-import 'dart:collection';
 import 'package:collection/collection.dart';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -17,6 +17,15 @@ class VMFClass {
 
   void addProperty(String propertyname, dynamic property) {
     properties[propertyname] = property;
+  }
+
+  @override
+  String toString() {
+    String string = '';
+    properties.forEach((propertyname, property) {
+      string += '"${propertyname.toString()}": ${property.toString()}\n';
+    });
+    return 'Class: "$className"\n$string';
   }
 }
 
@@ -81,7 +90,7 @@ Map<String, dynamic> readStructure() {
   Map<String, dynamic> structureJson = {};
   structureJson = jsonDecode(
       //TODO: MAKE READ FILE FROM CURRENT DIR!
-      File("lib/structure_classes_subclasses.json").readAsStringSync());
+      File("lib/vmf_structure.json").readAsStringSync());
   return structureJson;
 }
 
@@ -100,14 +109,17 @@ VMFClass stringToClass(String string) {
       newClass.classname = className;
 
       for (var subclass in subclassList) {
-        List<int> subclassPositions = substringPositions(substring, subclass);
+        List<int> subclassPositions =
+            substringPositions(substring, subclass['id']);
         sortIndexList += subclassPositions;
       }
     }
   });
+
   sortIndexList.sort();
   int? subclassStart = sortIndexList.firstOrNull;
-  print(sortIndexList);
+
+  subclassStart ??= substring.length;
   String valueParameters = substring
       .substring(0, subclassStart)
       .replaceAll('\t', '')
@@ -120,9 +132,10 @@ VMFClass stringToClass(String string) {
       newClass.addProperty(keyAndValue.first, keyAndValue.last);
     }
   }
-  print('-----');
-  print(substring.substring(subclassStart!));
-
-  //print(subclassStart);
+  // fileStructure.forEach((key, value) {
+  //   print('$key -> $value');
+  // });
+  // print(
+  //     '${substring.length - subclassStart} -> ${substring.substring(subclassStart)}');
   return newClass;
 }
