@@ -1,113 +1,23 @@
 {
-  "versioninfo":[
+  "versioninfo": [],
+  "visgroups": [
+    "visgroup"
   ],
-
-  "visgroups":[
-     {
-      "id":"visgroup",
-      "subclasses":[]
-   }
+  "world": [
+    "solid",
+    "hidden",
+    "group"
   ],
-
-  "viewsettings":[
+  "entity": [
+    "connections",
+    "solid",
+    "editor",
+    "hidden"
   ],
-
-  "world":[
-      {
-         "id": "solid",
-         "subclasses" : [
-            "side",
-            "editor"
-         ]
-      },
-      {
-         "id":"hidden",
-         "subclasses":[
-            "solid",
-            "entity"
-         ]
-      },
-      {
-         "id": "group",
-         "subclasses" : [
-            "editor"
-         ]
-      } 
+  "hidden": [
+    "solid",
+    "entity"
   ],
-
-  "entity":[
-      {
-         "id":"connections",
-         "subclasses":[]
-      },
-      {
-         "id": "solid",
-         "subclasses" : [
-            "side",
-            "editor"
-         ]
-      },
-      {
-         "id":"editor",
-         "subclasses":[]
-      },
-      {
-         "id":"hidden",
-         "subclasses":[
-            "solid",
-            "entity"
-         ]
-      }
-  ],
-
-  "hidden":[
-     {
-         "id": "solid",
-         "subclasses" : [
-            "side",
-            "editor"
-         ]
-      },
-      {
-         "id": "entity",
-         "subclasses":[
-            {
-               "id":"connections",
-               "subclasses":[]
-            },
-            {
-               "id": "solid",
-               "subclasses" : [
-                  "side",
-                  "editor"
-               ]
-            },
-            {
-               "id":"editor",
-               "subclasses":[]
-            },
-            {
-               "id":"hidden",
-               "subclasses":[
-                  "solid",
-                  "entity"
-               ]
-            }
-         ]
-      }
-  ],
-  "cameras":[
-     {
-      "id": "camera",
-      "subclasses":[]
-   }
-  ],
-  "cordons":[
-     {
-      "id": "cordon",
-      "subclasses":[
-         "box"
-      ]
-     }
-  ]
+  "cameras": [],
+  "cordon": []
 }

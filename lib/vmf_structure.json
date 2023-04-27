@@ -1,113 +1,37 @@
 {
+
   "versioninfo":[
   ],
 
   "visgroups":[
-     {
-      "id":"visgroup",
-      "subclasses":[]
-   }
+     "visgroup"
   ],
 
   "viewsettings":[
   ],
 
   "world":[
-      {
-         "id": "solid",
-         "subclasses" : [
-            "side",
-            "editor"
-         ]
-      },
-      {
-         "id":"hidden",
-         "subclasses":[
-            "solid",
-            "entity"
-         ]
-      },
-      {
-         "id": "group",
-         "subclasses" : [
-            "editor"
-         ]
-      } 
+      "solid",
+      "hidden",
+      "group"
+      
   ],
 
   "entity":[
-      {
-         "id":"connections",
-         "subclasses":[]
-      },
-      {
-         "id": "solid",
-         "subclasses" : [
-            "side",
-            "editor"
-         ]
-      },
-      {
-         "id":"editor",
-         "subclasses":[]
-      },
-      {
-         "id":"hidden",
-         "subclasses":[
-            "solid",
-            "entity"
-         ]
-      }
+      "connections",
+      "solid", 
+      "editor",
+      "hidden"
   ],
 
   "hidden":[
-     {
-         "id": "solid",
-         "subclasses" : [
-            "side",
-            "editor"
-         ]
-      },
-      {
-         "id": "entity",
-         "subclasses":[
-            {
-               "id":"connections",
-               "subclasses":[]
-            },
-            {
-               "id": "solid",
-               "subclasses" : [
-                  "side",
-                  "editor"
-               ]
-            },
-            {
-               "id":"editor",
-               "subclasses":[]
-            },
-            {
-               "id":"hidden",
-               "subclasses":[
-                  "solid",
-                  "entity"
-               ]
-            }
-         ]
-      }
+      "solid",
+      "entity"    
   ],
   "cameras":[
-     {
-      "id": "camera",
-      "subclasses":[]
-   }
+      "camera"
   ],
   "cordons":[
-     {
-      "id": "cordon",
-      "subclasses":[
-         "box"
-      ]
-     }
+      "cordon"
   ]
 }

@@ -1,0 +1,24 @@
+{
+    "classname_0": [
+        "versioninfo",
+        "visgroups",
+        "viewsettings",
+        "world",
+        "entity",
+        "hidden",
+        "cameras",
+        "cordons"
+        ],
+    "classname_1":[
+        "visgroup",
+        "solid",
+        "hidden",
+        "group",
+        "connections",
+        "solid", 
+        "editor",
+        "camera",
+        "cordon"
+    ]
+    
+}

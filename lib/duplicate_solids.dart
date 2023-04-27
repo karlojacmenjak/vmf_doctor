@@ -15,15 +15,15 @@ void duplicateSolids(String contents) {
 void findDuplicateSolids(String arguments) {
   File(arguments).readAsString().then((String contents) {
     int worldIndex = contents.indexOf("world");
-    String worldString = contents.substring(
-        worldIndex, bracketPairClosingIndex(contents, worldIndex));
+    String worldString =
+        contents.substring(worldIndex, pairClosingIndex(contents, worldIndex));
 
     int index = 0;
     List<String> solidList = List.empty(growable: true);
     while (index < worldString.length) {
       index = worldString.indexOf("solid", index);
       if (index == -1) break;
-      int newIndex = bracketPairClosingIndex(worldString, index);
+      int newIndex = pairClosingIndex(worldString, index);
       String solidString = worldString.substring(index, newIndex);
       solidList.add(solidString);
       index = newIndex;
