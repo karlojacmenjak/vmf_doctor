@@ -6,6 +6,7 @@ import 'dart:io';
 class VMFClass {
   String className = "";
   Map properties = {};
+  List<VMFClass> subclasses = List.empty(growable: true);
 
   String get classname {
     return className;
@@ -59,16 +60,13 @@ Map findStructures(String structure) {
   return keywordIndexes;
 }
 
-List<int> substringPositions(String structure, String substring) {
+List<int> substringPositions(String structure, Pattern substring) {
   List<int> indexList = List.empty(growable: true);
   int lastIndex = 0;
-  int keyLength = substring.length;
-  while ((lastIndex =
-          structure.indexOf(RegExp("\\b$substring\\b"), lastIndex)) >
-      -1) {
+  while ((lastIndex = structure.indexOf(substring, lastIndex)) > -1) {
     indexList.add(lastIndex);
 
-    lastIndex = indexList.last + keyLength;
+    lastIndex += 1;
   }
   return indexList;
 }
@@ -92,61 +90,81 @@ Map<String, dynamic> readStructure() {
   return structureJson;
 }
 
-VMFClass stringToClass(String string, [int layer = 0]) {
+VMFClass stringToClass(String string) {
   VMFClass newClass = VMFClass();
 
-  var fileStructure = readStructure();
   int bracketStart = string.indexOf('{');
+
+  newClass.className = string.substring(0, bracketStart).trim();
+
+  //Serialize file
   String substring = string
       .substring(bracketStart + 1, pairClosingIndex(string, bracketStart) - 1)
-      .replaceAll(RegExp('[^\\S\\r\\n]+'), ' ');
-  //find subclasses inside this structure
+      //Replaces whitespaces with ' '
+      .replaceAll(RegExp('[^\\S\\r]+'), ' ');
+
+  //print(substring);
+  List<int> verticesPlusList = substringPositions(substring, 'vertices_plus {');
+  verticesPlusList.sort();
+
+  //Fix vertices_plus to be a property
+  int verticesStart = 0;
+  do {
+    verticesStart = substring.indexOf('vertices_plus {');
+
+    if (verticesStart > -1) {
+      int verticesEnd = pairClosingIndex(substring, verticesStart);
+
+      String newVertices = substring.substring(
+          substring.indexOf('vertices_plus {'), verticesEnd);
+      newVertices = newVertices
+          .replaceAll(' "v" ', '')
+          .replaceAll('""', ') (')
+          .replaceAll('{"', '"(')
+          .replaceAll('" }', ')"')
+          .replaceAll('vertices_plus', '"vertices_plus"');
+      substring = substring.replaceRange(
+          substring.indexOf('vertices_plus {'), verticesEnd, newVertices);
+    }
+  } while (verticesStart > -1);
+
+  //Fix spaces that mess with properties
+  substring = substring
+      .replaceAll(') (', ')(')
+      //Replaces '(-64 -64 320)' with '(-64,-64,320)'
+      .replaceAll(RegExp(r'(?<=-?\d) (?=-?\d)'), ',');
 
   List<int> sortIndexList = List.empty(growable: true);
 
-  Map<String, dynamic> subclassLocations = {};
-
-  fileStructure.forEach((className, subclassList) {
-    if (string.contains(RegExp("\\b$className\\b"))) {
-      newClass.classname = className;
-
-      for (var subclass in subclassList) {
-        List<int> subclassPositions = substringPositions(substring, subclass);
-
-        if (subclassPositions.isNotEmpty) {
-          subclassLocations[subclass] = subclassPositions;
-          sortIndexList += subclassPositions;
-        }
-      }
-    }
-  });
+  //Match anything like 'word {'
+  sortIndexList = substringPositions(substring, RegExp(' (?=[a-z]+ {)'));
 
   sortIndexList.sort();
+
   int? subclassStart = sortIndexList.firstOrNull;
 
   subclassStart ??= substring.length;
   String valueParameters =
-      substring.substring(0, subclassStart).replaceAll(RegExp('"'), '');
+      substring.substring(0, subclassStart).trim().replaceAll('"', '');
 
-  List<String> keyValueList = valueParameters.split('\n');
-  for (var entry in keyValueList) {
-    List keyAndValue = entry.trimLeft().split(' ');
-    if (keyAndValue.first.length > 0 && keyAndValue.last.length > 0) {
-      newClass.addProperty(keyAndValue.first, keyAndValue.last);
+  List<String> keyValueList = valueParameters.split(' ');
+
+  for (int start = 0; start < keyValueList.length; start += 2) {
+    if (keyValueList[start].isNotEmpty && keyValueList[start + 1].isNotEmpty) {
+      newClass.addProperty(keyValueList[start], keyValueList[start + 1]);
     }
   }
-
-  print('Current layer: $layer\nClass: ${newClass.className}');
 
   if (substring.length - subclassStart <= 0) {
     return newClass;
   }
 
-  String newSubClass = substring.substring(
-      subclassStart, pairClosingIndex(substring, subclassStart));
+  print(newClass);
+  for (var subclass in sortIndexList) {
+    VMFClass test = stringToClass(substring.substring(subclass,
+        pairClosingIndex(substring, substring.indexOf('{', subclass))));
+    print(test);
+  }
 
-  int newLayer = layer + 1;
-  VMFClass subclassNew = stringToClass(newSubClass, newLayer);
-  //print(subclassNew);
   return newClass;
 }
