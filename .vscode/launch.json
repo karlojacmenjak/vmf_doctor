@@ -7,7 +7,9 @@
         {
             "name": "vmf_doctor",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "program": ".\\bin\\vmf_doctor.dart",
+            "args": ["--dsolid","C:\\Users\\karlo\\Desktop\\projekti\\compilepalx_plugins\\vmf_doctor\\test\\block.vmf"]
         }
     ]
 }

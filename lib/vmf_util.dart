@@ -6,7 +6,7 @@ import 'dart:io';
 class VMFClass {
   String className = "";
   Map properties = {};
-  List<VMFClass> subclasses = List.empty(growable: true);
+  List<VMFClass> subclassList = List.empty(growable: true);
 
   String get classname {
     return className;
@@ -16,8 +16,20 @@ class VMFClass {
     className = value;
   }
 
+  set appendSubclass(VMFClass newSubclass) {
+    subclassList.add(newSubclass);
+  }
+
+  get subclasses {
+    return subclassList;
+  }
+
   void addProperty(String propertyname, dynamic property) {
     properties[propertyname] = property;
+  }
+
+  void replaceSubclassList(List<VMFClass> newSubclassList) {
+    subclassList = newSubclassList;
   }
 
   @override
@@ -26,6 +38,10 @@ class VMFClass {
     properties.forEach((propertyname, property) {
       string += '"${propertyname.toString()}": ${property.toString()}\n';
     });
+    string += 'Children: ';
+    for (var subclass in subclassList) {
+      string += '${subclass.className} ';
+    }
     return 'Class: "$className"\n$string';
   }
 }
@@ -48,19 +64,7 @@ int pairClosingIndex(String string, int fromIndex, [String bracket = '{}']) {
   return closingPosition;
 }
 
-Map findStructures(String structure) {
-  List<String> structuresKeywords = structureKeywords();
-
-  Map keywordIndexes = {};
-
-  for (var keyword in structuresKeywords) {
-    List<int> indexList = substringPositions(structure, keyword);
-    keywordIndexes[keyword] = indexList;
-  }
-  return keywordIndexes;
-}
-
-List<int> substringPositions(String structure, Pattern substring) {
+List<int> substringPositions(String structure, RegExp substring) {
   List<int> indexList = List.empty(growable: true);
   int lastIndex = 0;
   while ((lastIndex = structure.indexOf(substring, lastIndex)) > -1) {
@@ -69,25 +73,6 @@ List<int> substringPositions(String structure, Pattern substring) {
     lastIndex += 1;
   }
   return indexList;
-}
-
-List<String> structureKeywords() {
-  Map<String, dynamic> structureJson = readStructure();
-
-  var structuresKeywords = <String>[];
-
-  structureJson.forEach((key, value) {
-    structuresKeywords.add(key);
-  });
-  return structuresKeywords;
-}
-
-Map<String, dynamic> readStructure() {
-  Map<String, dynamic> structureJson = {};
-  structureJson = jsonDecode(
-      //TODO: MAKE READ FILE FROM CURRENT DIR!
-      File("lib/vmf_structure.json").readAsStringSync());
-  return structureJson;
 }
 
 VMFClass stringToClass(String string) {
@@ -101,10 +86,11 @@ VMFClass stringToClass(String string) {
   String substring = string
       .substring(bracketStart + 1, pairClosingIndex(string, bracketStart) - 1)
       //Replaces whitespaces with ' '
-      .replaceAll(RegExp('[^\\S\\r]+'), ' ');
+      .replaceAll(RegExp(r'\s+|\s'), ' ')
+      .trim();
 
-  //print(substring);
-  List<int> verticesPlusList = substringPositions(substring, 'vertices_plus {');
+  List<int> verticesPlusList =
+      substringPositions(substring, RegExp('vertices_plus {'));
   verticesPlusList.sort();
 
   //Fix vertices_plus to be a property
@@ -155,15 +141,13 @@ VMFClass stringToClass(String string) {
     }
   }
 
-  if (substring.length - subclassStart <= 0) {
-    return newClass;
-  }
+  //if the class doesn't have subclasses
+  if (substring.length - subclassStart <= 0) return newClass;
 
-  print(newClass);
   for (var subclass in sortIndexList) {
     VMFClass test = stringToClass(substring.substring(subclass,
         pairClosingIndex(substring, substring.indexOf('{', subclass))));
-    print(test);
+    newClass.appendSubclass = test;
   }
 
   return newClass;

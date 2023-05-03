@@ -3,13 +3,11 @@ import 'dart:io';
 import 'package:duplicate_solids/vmf_util.dart';
 
 void duplicateSolids(String contents) {
-  String targetStruct = 'world';
-  Map result = findStructures(contents);
-  if (result.containsKey(targetStruct)) {
-    int structPosition = result[targetStruct].first;
-    String newString = contents.substring(structPosition);
-    print(stringToClass(newString));
-  }
+  int worldClassStart = contents.indexOf('world');
+  int worldClassEnd = pairClosingIndex(contents, worldClassStart);
+
+  String newString = contents.substring(worldClassStart, worldClassEnd);
+  print(stringToClass(newString));
 }
 
 void findDuplicateSolids(String arguments) {

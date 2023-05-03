@@ -146,14 +146,18 @@ world
       """;
 
 void main() {
-  test('findStructures', () {
-    Map result = findStructures(structureTest);
-    expect(result.entries.toString(),
-        '(MapEntry(versioninfo: [0, 71]), MapEntry(visgroups: [14]), MapEntry(viewsettings: []), ..., MapEntry(cameras: [52]), MapEntry(cordons: []))');
-  });
-
   test('substringPositions', () {
-    expect(substringPositions(classTest, "vertices_plus"),
+    String positionTest =
+        ' vertices_plus { "v" "-64 -64 320" "v" "128 -64 320" "v" "128 -256 320" "v" "-64 -256 320" }';
+    String pattern = 'vertices_plus {';
+
+    List<int> positions = substringPositions(positionTest, RegExp(pattern));
+    for (var index in positions) {
+      expect(positionTest.substring(index, index + pattern.length), pattern);
+    }
+  });
+  test('substringPositions', () {
+    expect(substringPositions(classTest, RegExp('vertices_plus')),
         [301, 665, 1029, 1393, 1755, 2118]);
   });
   test('stringToClass', () {
